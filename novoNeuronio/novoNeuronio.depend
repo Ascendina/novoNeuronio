@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1504017193 source:c:\users\mila\documents\github\novoneuronio\novoneuronio\main.c
+	<stdio.h>
+	<stdlib.h>
+	<limits.h>
+	<float.h>
+
