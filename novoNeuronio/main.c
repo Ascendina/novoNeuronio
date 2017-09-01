@@ -3,9 +3,9 @@
 #include <limits.h>
 #include <float.h>
 
+#include "definicoes.h"
 
-#define infinitoPositivo DBL_MAX
-#define infinitoNegativo -DBL_MAX
+
 
 //* Funcao que recebe dois doubles e retorna a adicao da algebra minmax*//
 double adicao (double a, double b){
@@ -59,6 +59,77 @@ double supremo(double a, double b){
         resultado = b;
     }
     return resultado;
+}
+
+/*Funcao responsavel por fazer o valor do peso ser repetido para ter o
+tamanho do vetor de entrada*/
+void geraVetorPeso (double valorPeso, double vetorPeso[tamanhoVetor]){
+
+    int i;
+    for (i = 0; i < tamanhoVetor; i++){
+        vetorPeso[i] = valorPeso;
+    }
+}
+
+/*Funcao responsavel por realizar a dilacao da entrada pelo vetor de pesos*/
+double dilatacaoUnitaria (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor]){
+    int i;
+    double valorAnterior, resultado = 0;
+
+    for (i = 0; i < tamanhoVetor; i++){
+        //realizando calculo do valor
+        resultado = adicao(vetorPeso[i], entrada[i]);
+
+        //fazendo comparacao de supremo e atualizando o valor anterior
+        valorAnterior = supremo(valorAnterior, resultado);
+    }
+
+    return valorAnterior;
+}
+
+/*Funcao responsavel por realizar a erosao do vetor de entrada pelo vetor peso*/
+double erosaoUnitaria(double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor]){
+    int i;
+    double valorAnterior, resultado = 0;
+
+    for (i = 0; i < tamanhoVetor; i++){
+        //realizando calculo do valor
+        resultado = adicaoDual(vetorPeso[i], entrada[i]);
+
+        //fazendo comparacao de supremo e atualizando o valor anterior
+        valorAnterior = infimo(valorAnterior, resultado);
+    }
+
+    return valorAnterior;
+}
+
+/*Funcao responsavel por realizar todos os calculos da unidade de dilatacao*/
+void dilatacao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], double resultadoDilatacao[tamanhoVetor]){
+    double peso[tamanhoVetor];
+
+    int i;
+    for(i = 0; i < tamanhoVetor; i++){
+        //calcula vetor peso
+        geraVetorPeso(vetorPeso[i], peso);
+
+        //calculando o valor da dilatacao
+        resultadoDilatacao[i] = dilatacaoUnitaria(peso, entrada);
+    }
+}
+
+
+/*Funcao responsavel por realizar todos os calculos da unidade de erosao*/
+void erosao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], double resultadoErosao[tamanhoVetor]){
+    double peso[tamanhoVetor];
+
+    int i;
+    for(i = 0; i < tamanhoVetor; i++){
+        //calcula vetor peso
+        geraVetorPeso(vetorPeso[i], peso);
+
+        //calculando o valor da dilatacao
+        resultadoErosao[i] = erosaoUnitaria(peso, entrada);
+    }
 }
 
 int main()
