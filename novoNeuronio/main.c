@@ -133,11 +133,11 @@ void erosao (double* vetorPeso, double* entrada, double* resultadoErosao){
 }
 
 /*Funcao responsavel por encontrar o supremo do resultado da erosao*/
-double valorNu (double* vetorPeso, double* entrada, double* resultadoErosao){
+double valorNu (double* vetorPesoB, double* entrada, double* resultadoErosao){
     double resultado;
 
     //calculado a erosao
-    erosao(vetorPeso, entrada, resultadoErosao);
+    erosao(vetorPesoB, entrada, resultadoErosao);
 
     //iniciando o valor de resultado
     resultado = infinitoNegativo;
@@ -151,11 +151,11 @@ double valorNu (double* vetorPeso, double* entrada, double* resultadoErosao){
 }
 
 /*Funcao responsavel por encontrar o infimo do resultado da dilatacao*/
-double valorMi (double* vetorPeso, double* entrada, double* resultadoDilatacao){
+double valorMi (double* vetorPesoA, double* entrada, double* resultadoDilatacao){
     double resultado;
 
     //calculado a dilatacao
-    dilatacao(vetorPeso, entrada, resultadoDilatacao);
+    dilatacao(vetorPesoA, entrada, resultadoDilatacao);
 
     //iniciando o valor de resultado
     resultado = infinitoPositivo;
@@ -169,18 +169,43 @@ double valorMi (double* vetorPeso, double* entrada, double* resultadoDilatacao){
 }
 
 /*Funcao responsavel por fazer o calculo do valor de alfa*/
-double valorAlfa(double* vetorPeso, double* entrada, double* resultadoDilatacao, double* resultadoErosao){
+double valorAlfa(double* vetorPesoA, double* vetorPesoB, double* entrada, double* resultadoDilatacao, double* resultadoErosao){
     double alfa;
 
-    alfa = theta * valorMi(vetorPeso, entrada, resultadoDilatacao) + (1 - theta) * valorNu(vetorPeso, entrada, resultadoErosao);
+    alfa = theta * valorMi(vetorPesoA, entrada, resultadoDilatacao) + (1 - theta) * valorNu(vetorPesoB, entrada, resultadoErosao);
 
     return alfa;
 }
 
+/*Funcao responsavel por realizar o calculo da componente linear dominante*/
+double valorBeta(double* vetorPesoC, double* entrada){
+    double resultadoLinear;
+    resultadoLinear = 0;
+
+    int i;
+    for(i = 0; i < tamanhoVetor; i++){
+        resultadoLinear = resultadoLinear + (vetorPesoC[i] * entrada[i]);
+    }
+
+    resultadoLinear = resultadoLinear + rho;
+
+    return resultadoLinear;
+}
+
+/*Funcao responsavel por reunir a parte linear e nao linear do calculo do neuronio*/
+double saidaNeuronio (double* vetorPesoA, double* vetorPesoB, double* vetorPesoC, double* entrada, double* resultadoDilatacao, double* resultadoErosao){
+    double saida;
+
+    saida = lambda * valorAlfa(vetorPesoA, vetorPesoB, entrada, resultadoDilatacao, resultadoErosao) + (1 - lambda) * valorBeta(vetorPesoC, entrada);
+
+    return saida;
+}
+
+
 int main()
 {
     double vetorPeso[tamanhoVetor], entrada[tamanhoVetor], resultadoDilatacao[tamanhoVetor], resultadoErosao[tamanhoVetor];
-    double alfa;
+    double alfa, linear, saida;
 
     int i;
     for (i = 0; i < tamanhoVetor; i++){
@@ -188,10 +213,20 @@ int main()
         entrada[i] = 1;
     }
 
-    alfa = valorAlfa(vetorPeso, entrada, resultadoDilatacao, resultadoErosao);
+    alfa = valorAlfa(vetorPeso,vetorPeso, entrada, resultadoDilatacao, resultadoErosao);
 
     printf("Valor resultante de ALFA \n");
     printf("Alfa = %lf\n", alfa);
+
+    linear = valorBeta(vetorPeso,entrada);
+
+    printf("Valor resultante Componente linear \n");
+    printf("Linear = %lf\n", linear);
+
+    saida = saidaNeuronio(vetorPeso, vetorPeso, vetorPeso, entrada, resultadoDilatacao, resultadoErosao);
+
+    printf("Valor Saida Neuronio\n");
+    printf("Saida = %lf\n", saida);
 
     /*double a = 3.14;
     double b = 4.5;
