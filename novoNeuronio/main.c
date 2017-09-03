@@ -104,7 +104,7 @@ double erosaoUnitaria(double vetorPeso[tamanhoVetor], double entrada[tamanhoVeto
 }
 
 /*Funcao responsavel por realizar todos os calculos da unidade de dilatacao*/
-void dilatacao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], double resultadoDilatacao[tamanhoVetor]){
+void dilatacao (double* vetorPeso, double* entrada, double* resultadoDilatacao){
     double peso[tamanhoVetor];
 
     int i;
@@ -119,7 +119,7 @@ void dilatacao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], do
 
 
 /*Funcao responsavel por realizar todos os calculos da unidade de erosao*/
-void erosao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], double resultadoErosao[tamanhoVetor]){
+void erosao (double* vetorPeso, double* entrada, double* resultadoErosao){
     double peso[tamanhoVetor];
 
     int i;
@@ -132,9 +132,68 @@ void erosao (double vetorPeso[tamanhoVetor], double entrada[tamanhoVetor], doubl
     }
 }
 
+/*Funcao responsavel por encontrar o supremo do resultado da erosao*/
+double valorNu (double* vetorPeso, double* entrada, double* resultadoErosao){
+    double resultado;
+
+    //calculado a erosao
+    erosao(vetorPeso, entrada, resultadoErosao);
+
+    //iniciando o valor de resultado
+    resultado = infinitoNegativo;
+
+    int i;
+    for(i = 0; i < tamanhoVetor; i++){
+        resultado = supremo(resultado, resultadoErosao[i]);
+    }
+
+    return resultado;
+}
+
+/*Funcao responsavel por encontrar o infimo do resultado da dilatacao*/
+double valorMi (double* vetorPeso, double* entrada, double* resultadoDilatacao){
+    double resultado;
+
+    //calculado a dilatacao
+    dilatacao(vetorPeso, entrada, resultadoDilatacao);
+
+    //iniciando o valor de resultado
+    resultado = infinitoPositivo;
+
+    int i;
+    for(i = 0; i < tamanhoVetor; i++){
+        resultado = infimo(resultado, resultadoDilatacao[i]);
+    }
+
+    return resultado;
+}
+
+/*Funcao responsavel por fazer o calculo do valor de alfa*/
+double valorAlfa(double* vetorPeso, double* entrada, double* resultadoDilatacao, double* resultadoErosao){
+    double alfa;
+
+    alfa = theta * valorMi(vetorPeso, entrada, resultadoDilatacao) + (1 - theta) * valorNu(vetorPeso, entrada, resultadoErosao);
+
+    return alfa;
+}
+
 int main()
 {
-    double a = 3.14;
+    double vetorPeso[tamanhoVetor], entrada[tamanhoVetor], resultadoDilatacao[tamanhoVetor], resultadoErosao[tamanhoVetor];
+    double alfa;
+
+    int i;
+    for (i = 0; i < tamanhoVetor; i++){
+        vetorPeso[i] = 1;
+        entrada[i] = 1;
+    }
+
+    alfa = valorAlfa(vetorPeso, entrada, resultadoDilatacao, resultadoErosao);
+
+    printf("Valor resultante de ALFA \n");
+    printf("Alfa = %lf\n", alfa);
+
+    /*double a = 3.14;
     double b = 4.5;
 
     printf("adicao = %lf\n", adicao(a,b));

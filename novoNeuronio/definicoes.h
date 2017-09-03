@@ -15,3 +15,9 @@
 
 //Tamanho da entrada e dos vetores de peso
 #define tamanhoVetor 200
+
+
+//Valor dos parametros do neuronio
+#define rho 0.5
+#define theta 0.5
+#define lambda 0.5
